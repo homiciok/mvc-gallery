@@ -1,23 +1,27 @@
 <?php
 
+require_once 'models/Validator.php';
+
 class HomeController{
 	
-function execute($conn) {
-		$validator = new Validator();
-		$dataArr = [];
+function execute() {
 
-		$form_validation = [
-			'name'    => 'validRegexName', 
-			'surname' => 'validRegexName', 
-			'email'   => 'validRegexEmail', 
-			'password'=> 'validRegexPassword'
-		];
+	$validator = new Validator();
+	$dataArr = [];
+
+	$form_validation = [
+		'name'    => 'validRegexName', 
+		'surname' => 'validRegexName', 
+		'email'   => 'validRegexEmail', 
+		'password'=> 'validRegexPassword'
+	];
 		
-	if($_SERVER['REQUEST_METHOD'] === 'POST'){
+	if($_SERVER['REQUEST_METHOD'] == 'POST'){
+		
 		foreach ($form_validation as $key => $rule) {
 				$dataArr[$key] = empty($_POST[$key]) ? '' : trim($_POST[$key]);
 				if ($validator->isNotEmpty($dataArr[$key],$key)) {
-		  	 	$validator->$rule($dataArr[$key],$key);
+		  	 		$validator->$rule($dataArr[$key],$key);
 				}	
 		}
 
@@ -29,8 +33,8 @@ function execute($conn) {
 			if(empty($errors)){
 
 				if($dataArr['password'] === $confirm_password){
-					if(!$obj->emailExists($dataArr['email'])){
-						$result = $obj->insert($dataArr, 'users');
+					if(!DB::getInstance()->emailExists($dataArr['email'])){
+						$result = DB::getInstance()->insert($dataArr, 'users');
 						header('Location: ' . $_SERVER['PHP_SELF']);
 						exit;
 									
@@ -40,7 +44,6 @@ function execute($conn) {
 				}else{
 					$errors['confirm_password'] = "passwords does not match";
 				}
-				return $result;
 			}
 	}
 

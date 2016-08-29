@@ -80,8 +80,7 @@ class DB {
 
 		$query = substr($query, 0, -2);
 		$query .= ")";
-		$result = DB::getInstance()->mysqli->query($query);
-		return $result;
+		
  	} 
 
 	public function emailExists($email){
